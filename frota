@@ -1,0 +1,53 @@
+import pandas as pd
+import numpy as np
+
+df_23 = pd.read_excel('Control_multas.xls', sheet_name="2023", usecols=[2,7,9,10,11,24])
+df_22 = pd.read_excel('Control_multas.xls', sheet_name="2022", usecols=[2,7,9,10,11,24])
+df_21 = pd.read_excel('Control_multas.xls', sheet_name="2021", usecols=[2,7,9,10,11,24])
+df_20 = pd.read_excel('Control_multas.xls', sheet_name="2020", usecols=[2,7,9,10,11,24])
+df_19 = pd.read_excel('Control_multas.xls', sheet_name="2019", usecols=[2,7,9,10,11,24])
+
+
+df_multas = pd.concat([df_23, df_22, df_21, df_20, df_19])
+display(df_multas)
+
+df_multas.head(50)
+
+# A coluna indice (primeira coluna) manteve a numeração original das respectivas planilhas, por isso preciso desconsiderar o indice (index)
+# ignore_index
+# keys (sem ignore_index)
+df_multas = pd.concat([df_23, df_22, df_21, df_20, df_19], ignore_index=True)
+display(df_multas)
+
+# Seu formato
+df_multas.shape
+
+# Cardinalidade (quantidade de valores vazios em cada uma das colunas)
+df_multas.nunique()
+
+df_multas['Valor Real Pago'] = df_multas['Valor Real Pago'].str.replace('.','')
+
+# A coluna "Data da Infração" está como objeto, precisa ser configura corretamente (datetime)
+df_multas["Data da Infração"] = pd.to_datetime(df_multas["Data da Infração"], errors="coerce")
+infer_datetime_format=True 
+
+# Visualinado se a data agora está no formato correto(datetime)
+df_multas.info()
+
+df_multas['Valor Real Pago'] = pd.to_numeric(df_multas['Valor Real Pago'],errors = 'coerce')
+
+print(df_multas.info())
+
+# Cardinalidade (quantidade de valores vazios em cada uma das colunas)
+df_multas.nunique()
+
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(15,6))
+plot = df_multas.Unidade.value_counts().head(100).plot(kind="bar")
+plot.set_title("Top 100 Unidades com maior número de multas - 2019 - 2022")Limpeza dos dados
+Criando uma cópia para limpeza dos dados, asssim o dataframe original não será alterado
+1
+# Vou chamar a cópia de df_pre de pre-process (pré-processsado) para fazer as devidas limpezas 
+2
+df_pre = df_multas.copy()
